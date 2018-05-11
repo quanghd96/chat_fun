@@ -17,9 +17,10 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    _auth.currentUser().then((FirebaseUser user){
-      Navigator.push(
-          context, new MaterialPageRoute(builder: (context) => new Chat()));
+    _auth.currentUser().then((FirebaseUser user) {
+      if (user != null)
+        Navigator.push(
+            context, new MaterialPageRoute(builder: (context) => new Chat()));
     });
   }
 

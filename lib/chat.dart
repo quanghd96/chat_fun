@@ -1,12 +1,14 @@
-import 'dart:async';
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-FacebookLogin facebookLogin = new FacebookLogin();
 final DatabaseReference reference =
     FirebaseDatabase.instance.reference().child("message");
 
@@ -22,15 +24,6 @@ class Chat extends StatefulWidget {
 }
 
 class ChatState extends State<Chat> with TickerProviderStateMixin {
-  @override
-  void initState() {
-    super.initState();
-    _auth.currentUser().then((FirebaseUser user) {
-      _name = user.displayName;
-      _avatar = user.photoUrl;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -65,12 +58,13 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
         margin: const EdgeInsets.symmetric(horizontal: 8.0),
         child: new Row(
           children: <Widget>[
+            new IconButton(icon: new Icon(Icons.image), onPressed: _handlePick),
             new Flexible(
               child: new TextField(
                 controller: _textController,
                 onSubmitted: _handleSubmitted,
                 decoration:
-                    new InputDecoration.collapsed(hintText: "Send a message"),
+                    new InputDecoration.collapsed(hintText: "Write message..."),
               ),
             ),
             new Container(
@@ -85,11 +79,29 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
     );
   }
 
-  void _handleSubmitted(String value) {
+  void _handleSubmitted(String value) async {
     _textController.clear();
-    reference
-        .push()
-        .set({'message': value, 'senderName': _name, 'senderAvatar': _avatar});
+    await _auth.currentUser().then((FirebaseUser user) {
+      _name = user.displayName;
+      _avatar = user.photoUrl;
+    });
+    if (value.trim().length > 0)
+      reference.push().set(
+          {'message': value, 'senderName': _name, 'senderAvatar': _avatar});
+  }
+
+  void _handlePick() async {
+    File imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    int random = new Random().nextInt(100000);
+    StorageReference ref =
+        FirebaseStorage.instance.ref().child("image_$random.jpg");
+    StorageUploadTask uploadTask = ref.putFile(imageFile);
+    Uri downloadUrl = (await uploadTask.future).downloadUrl;
+    reference.push().set({
+      'image': downloadUrl.toString(),
+      'senderName': _name,
+      'senderAvatar': _avatar
+    });
   }
 }
 
@@ -110,9 +122,8 @@ class ChatMessage extends StatelessWidget {
           new Container(
             margin: const EdgeInsets.only(right: 16.0),
             child: new CircleAvatar(
-                child: new Text(snapshot.value['senderName'].length > 0
-                    ? snapshot.value['senderName'][0]
-                    : 'A')),
+              backgroundImage: new NetworkImage(snapshot.value['senderAvatar']),
+            ),
           ),
           new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +132,12 @@ class ChatMessage extends StatelessWidget {
                   style: Theme.of(context).textTheme.subhead),
               new Container(
                 margin: const EdgeInsets.only(top: 5.0),
-                child: new Text(snapshot.value['message']),
+                child: snapshot.value['image'] != null
+                    ? new Image.network(
+                        snapshot.value['image'],
+                        width: 100.0,
+                      )
+                    : new Text(snapshot.value['message']),
               ),
             ],
           ),

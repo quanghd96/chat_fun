@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:chat_fun/image.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final DatabaseReference reference =
@@ -133,9 +134,17 @@ class ChatMessage extends StatelessWidget {
               new Container(
                 margin: const EdgeInsets.only(top: 5.0),
                 child: snapshot.value['image'] != null
-                    ? new Image.network(
-                        snapshot.value['image'],
-                        width: 100.0,
+                    ? new GestureDetector(
+                        child: new Image.network(
+                          snapshot.value['image'],
+                          width: 100.0,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new ImageView(snapshot.value['image'])));
+                        },
                       )
                     : new Text(snapshot.value['message']),
               ),

@@ -1,0 +1,117 @@
+{
+  "project_info": {
+    "project_number": "170189748100",
+    "firebase_url": "https://lilianachat123.firebaseio.com",
+    "project_id": "lilianachat123",
+    "storage_bucket": "lilianachat123.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170189748100:android:1b82fad5292b83cf",
+        "android_client_info": {
+          "package_name": "com.quang.images"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170189748100-7evjj05vn7qno5qko6u4rten0uoa89eq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj4D5XZe-iliNoADu2yPnfSvFADubBjS8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170189748100:android:9f2ab3c37fc6c89c",
+        "android_client_info": {
+          "package_name": "com.quang.chatfun"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170189748100-4f2i4gvmqf6novql5jm56s6adldq4ja3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quang.lilianachat",
+            "certificate_hash": "589190d91eacf7ef2e3b720b5844fd8b3ab2100c"
+          }
+        },
+        {
+          "client_id": "170189748100-7evjj05vn7qno5qko6u4rten0uoa89eq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj4D5XZe-iliNoADu2yPnfSvFADubBjS8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "170189748100-7evjj05vn7qno5qko6u4rten0uoa89eq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170189748100:android:d55fdfcee49a3371",
+        "android_client_info": {
+          "package_name": "com.yourcompany.chatliliana"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170189748100-7evjj05vn7qno5qko6u4rten0uoa89eq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj4D5XZe-iliNoADu2yPnfSvFADubBjS8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

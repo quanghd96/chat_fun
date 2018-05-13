@@ -9,11 +9,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:chat_fun/image.dart';
 import 'package:chat_fun/login.dart';
+import 'package:simple_moment/simple_moment.dart';
 
 final DatabaseReference reference =
     FirebaseDatabase.instance.reference().child("message");
 
 String _name, _avatar, _uid;
+var moment = new Moment.now();
 var _textController = new TextEditingController();
 
 class Chat extends StatefulWidget {
@@ -55,7 +57,7 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
                 return new ChatMessageRight(
                     snapshot: snapshot, animation: animation);
               else
-                return new ChatMessage(
+                return new ChatMessageLeft(
                     snapshot: snapshot, animation: animation);
             },
           )),
@@ -136,8 +138,8 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
   }
 }
 
-class ChatMessage extends StatelessWidget {
-  ChatMessage({this.snapshot, this.animation});
+class ChatMessageLeft extends StatelessWidget {
+  ChatMessageLeft({this.snapshot, this.animation});
 
   final Animation animation;
 
@@ -145,14 +147,13 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(snapshot.toString());
     return new Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
+      margin: const EdgeInsets.symmetric(vertical: 5.0),
       child: new Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           new Container(
-            margin: const EdgeInsets.only(right: 16.0),
+            margin: const EdgeInsets.only(right: 16.0, top: 15.0),
             child: new CircleAvatar(
               backgroundImage: new NetworkImage(snapshot.value['senderAvatar']),
             ),
@@ -162,6 +163,8 @@ class ChatMessage extends StatelessWidget {
             children: <Widget>[
               new Text(snapshot.value['senderName'],
                   style: Theme.of(context).textTheme.subhead),
+              new Text(moment.from(new DateTime.fromMillisecondsSinceEpoch(snapshot.value['timeSend'])),
+                  style: Theme.of(context).textTheme.caption),
               new Container(
                 margin: const EdgeInsets.only(top: 5.0),
                 child: snapshot.value['image'] != null

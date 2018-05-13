@@ -8,13 +8,12 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:chat_fun/image.dart';
+import 'package:chat_fun/login.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
 final DatabaseReference reference =
     FirebaseDatabase.instance.reference().child("message");
 
-String _name;
-String _avatar;
+String _name, _avatar, _uid;
 var _textController = new TextEditingController();
 
 class Chat extends StatefulWidget {
@@ -25,6 +24,19 @@ class Chat extends StatefulWidget {
 }
 
 class ChatState extends State<Chat> with TickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+      if (user == null) {
+        Navigator.push(
+            context, new MaterialPageRoute(builder: (context) => new Login()));
+      } else {
+        _uid = user.uid;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -39,7 +51,12 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
             reverse: true,
             itemBuilder:
                 (_, DataSnapshot snapshot, Animation<double> animation, int n) {
-              return new ChatMessage(snapshot: snapshot, animation: animation);
+              if (snapshot.value['id'] == _uid)
+                return new ChatMessageRight(
+                    snapshot: snapshot, animation: animation);
+              else
+                return new ChatMessage(
+                    snapshot: snapshot, animation: animation);
             },
           )),
           new Divider(height: 1.0),
@@ -82,13 +99,24 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
 
   void _handleSubmitted(String value) async {
     _textController.clear();
-    await _auth.currentUser().then((FirebaseUser user) {
-      _name = user.displayName;
-      _avatar = user.photoUrl;
+    await FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+      if (user == null)
+        Navigator.push(
+            context, new MaterialPageRoute(builder: (context) => new Login()));
+      else {
+        _name = user.displayName;
+        _avatar = user.photoUrl;
+        _uid = user.uid;
+      }
     });
     if (value.trim().length > 0)
-      reference.push().set(
-          {'message': value, 'senderName': _name, 'senderAvatar': _avatar});
+      reference.push().set({
+        'message': value,
+        'senderName': _name,
+        'senderAvatar': _avatar,
+        'id': _uid,
+        'timeSend': new DateTime.now().millisecondsSinceEpoch
+      });
   }
 
   void _handlePick() async {
@@ -101,7 +129,9 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
     reference.push().set({
       'image': downloadUrl.toString(),
       'senderName': _name,
-      'senderAvatar': _avatar
+      'senderAvatar': _avatar,
+      'id': _uid,
+      'timeSend': new DateTime.now().millisecondsSinceEpoch
     });
   }
 }
@@ -143,10 +173,74 @@ class ChatMessage extends StatelessWidget {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new ImageView(snapshot.value['image'])));
+                                  builder: (context) =>
+                                      new ImageView(snapshot.value['image'])));
                         },
                       )
-                    : new Text(snapshot.value['message']),
+                    : new Container(
+                        padding: const EdgeInsets.all(10.0),
+                        decoration: new BoxDecoration(
+                            color: new Color.fromARGB(255, 39, 142, 139),
+                            borderRadius: new BorderRadius.circular(15.0)),
+                        child: new Text(
+                          snapshot.value['message'],
+                          style: new TextStyle(
+                              color: new Color.fromARGB(255, 255, 255, 255)),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatMessageRight extends StatelessWidget {
+  ChatMessageRight({this.snapshot, this.animation});
+
+  final Animation animation;
+
+  final DataSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      margin: const EdgeInsets.symmetric(vertical: 5.0),
+      child: new Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              new Container(
+                child: snapshot.value['image'] != null
+                    ? new GestureDetector(
+                        child: new Image.network(
+                          snapshot.value['image'],
+                          width: 100.0,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) =>
+                                      new ImageView(snapshot.value['image'])));
+                        },
+                      )
+                    : new Container(
+                        padding: const EdgeInsets.all(10.0),
+                        decoration: new BoxDecoration(
+                            color: new Color.fromARGB(255, 39, 142, 139),
+                            borderRadius: new BorderRadius.circular(15.0)),
+                        child: new Text(
+                          snapshot.value['message'],
+                          style: new TextStyle(
+                              color: new Color.fromARGB(255, 255, 255, 255)),
+                        ),
+                      ),
               ),
             ],
           ),

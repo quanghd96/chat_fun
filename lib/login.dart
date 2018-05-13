@@ -14,16 +14,6 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   static final FacebookLogin facebookSignIn = new FacebookLogin();
 
-  @override
-  void initState() {
-    super.initState();
-    _auth.currentUser().then((FirebaseUser user) {
-      if (user != null)
-        Navigator.push(
-            context, new MaterialPageRoute(builder: (context) => new Chat()));
-    });
-  }
-
   Future<Null> _login() async {
     final FacebookLoginResult result =
         await facebookSignIn.logInWithReadPermissions(['email']);
@@ -42,10 +32,7 @@ class _LoginState extends State<Login> {
         final FirebaseUser currentUser = await _auth.currentUser();
         assert(user.uid == currentUser.uid);
 
-        Navigator.push(
-          context,
-          new MaterialPageRoute(builder: (context) => new Chat()),
-        );
+        Navigator.pop(context);
         break;
       case FacebookLoginStatus.cancelledByUser:
         //cancell login

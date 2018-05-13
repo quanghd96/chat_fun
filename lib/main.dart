@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:chat_fun/login.dart';
+import 'package:chat_fun/chat.dart';
 
 void main() {
   runApp(new MaterialApp(
@@ -13,6 +13,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Login();
+    return new Chat();
   }
 }

@@ -115,7 +115,7 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
         'senderName': _name,
         'senderAvatar': _avatar,
         'id': _uid,
-        'timeSend': new DateTime.now().millisecondsSinceEpoch
+        'timeSend': ServerValue.timestamp
       });
   }
 
@@ -131,7 +131,7 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
       'senderName': _name,
       'senderAvatar': _avatar,
       'id': _uid,
-      'timeSend': new DateTime.now().millisecondsSinceEpoch
+      'timeSend': ServerValue.timestamp
     });
   }
 }
@@ -145,6 +145,7 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(snapshot.toString());
     return new Container(
       margin: const EdgeInsets.symmetric(vertical: 10.0),
       child: new Row(

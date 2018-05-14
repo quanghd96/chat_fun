@@ -6,10 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:chat_fun/image.dart';
 import 'package:chat_fun/login.dart';
 import 'package:simple_moment/simple_moment.dart';
+import 'package:chat_fun/profile.dart';
 
 final DatabaseReference reference =
     FirebaseDatabase.instance.reference().child("message");
@@ -42,7 +44,35 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text("Chat room")),
+      appBar: new AppBar(
+        title: new Text("Chat room"),
+        actions: <Widget>[
+          new PopupMenuButton<String>(
+              onSelected: (String key) {
+                if (key == 'My profile') {
+                  Navigator.push(context,
+                      new MaterialPageRoute(builder: (context) => new Profile()));
+                } else if (key == 'Logout') {
+                  FirebaseAuth.instance.signOut();
+                  new FacebookLogin().logOut();
+                  Navigator.push(context,
+                      new MaterialPageRoute(builder: (context) => new Login()));
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
+                    PopupMenuItem<String>(
+                      value: 'My profile',
+                      child: const Text('My profile'),
+                      key: new Key('profile'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'Logout',
+                      child: new Text('Logout'),
+                      key: new Key('logout'),
+                    )
+                  ]),
+        ],
+      ),
       body: new Column(
         children: <Widget>[
           new Flexible(
@@ -75,7 +105,7 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
     return new IconTheme(
       data: new IconThemeData(color: Theme.of(context).accentColor),
       child: new Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 4.0),
         child: new Row(
           children: <Widget>[
             new IconButton(icon: new Icon(Icons.image), onPressed: _handlePick),
@@ -88,7 +118,10 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
               ),
             ),
             new Container(
-              margin: new EdgeInsets.symmetric(horizontal: 4.0),
+              child: new IconButton(
+                  icon: new Icon(Icons.tag_faces), onPressed: null),
+            ),
+            new Container(
               child: new IconButton(
                   icon: new Icon(Icons.send),
                   onPressed: () => _handleSubmitted(_textController.text)),
@@ -138,6 +171,18 @@ class ChatState extends State<Chat> with TickerProviderStateMixin {
   }
 }
 
+final popupMenu = new PopupMenuButton(
+  child: new ListTile(
+    title: new Text('Doge or lion?'),
+    trailing: const Icon(Icons.more_vert),
+  ),
+  itemBuilder: (_) => <PopupMenuItem<String>>[
+        new PopupMenuItem<String>(child: new Text('Doge'), value: 'Doge'),
+        new PopupMenuItem<String>(child: new Text('Lion'), value: 'Lion'),
+      ],
+  onSelected: null,
+);
+
 class ChatMessageLeft extends StatelessWidget {
   ChatMessageLeft({this.snapshot, this.animation});
 
@@ -163,7 +208,9 @@ class ChatMessageLeft extends StatelessWidget {
             children: <Widget>[
               new Text(snapshot.value['senderName'],
                   style: Theme.of(context).textTheme.subhead),
-              new Text(moment.from(new DateTime.fromMillisecondsSinceEpoch(snapshot.value['timeSend'])),
+              new Text(
+                  moment.from(new DateTime.fromMillisecondsSinceEpoch(
+                      snapshot.value['timeSend'])),
                   style: Theme.of(context).textTheme.caption),
               new Container(
                 margin: const EdgeInsets.only(top: 5.0),

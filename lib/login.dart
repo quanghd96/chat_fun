@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter/material.dart';
-import 'package:chat_fun/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
